@@ -4,5 +4,6 @@
     "database": "@database",
     "password": "@password",
     "port": "@port",
-    "host": "@host"  }
+    "host": "@host"
+  }
 }

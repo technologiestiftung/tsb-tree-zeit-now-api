@@ -2,7 +2,7 @@ import { json, send } from "micro";
 import { Pool, PoolConfig } from "pg";
 import { NowRequest, NowResponse } from "@now/node";
 
-// http://apiurl.com/api/get-tree?id=idhere
+// http://apiurl.com/api/get-watered-trees
 
 const pgconfig: PoolConfig = {
   user: process.env.user!,
@@ -17,9 +17,13 @@ export default async (req: NowRequest, res: NowResponse) => {
   try {
     const data = await json(req);
     const { id } = req.query;
-    const result = await pool.query(`SELECT * FROM trees WHERE trees.id = $1`, [id]);
+    const result = await pool.query(`
+      SELECT id
+      FROM trees
+      WHERE cardinality(watered) > 0;
+    `);
     res.setHeader('Access-Control-Allow-Origin', '*')
-    send(res, 200, result.rows[0] });
+    send(res, 200, result.rows.map(item => item.id) });
   } catch (error) {
     console.error(error);
     return send(res, 400);
